@@ -18,8 +18,9 @@ VALTYP	equ 0xF663 ; 1 byte indicate the type of variable in DAC
 		; 2 = Integer
 		;	DAC byte 0+1 is the 16bits integer
 		; 3 = String
-		;	DAC byte 0 is number of chars
-		;	DAC byte 1+2 pointer to string storage
+		;   DAC byte 2+3 is pointer to string descriptor
+		;	  descriptor byte 0 is number of chars
+		;	  descriptor byte 1+2 pointer to string storage
 		; 4 = Single precision
 		;	DAC byte 0+1+2+3 single precision real number
 		; 8 = Double precision
@@ -43,7 +44,6 @@ retrieve:
 store:
 	call set_mmpage_get_indx_ptr
 	push hl
-	inc de
 	call converthex
 	ex de,hl
 	pop hl
@@ -59,15 +59,24 @@ back2basic:
 set_mmpage_get_indx_ptr:
 	; get string pointer to interprete
 	; no input validation simply assume it is a string...
-	ld hl,(DAC)
+	ld hl,(DAC+2)
+
+	ld b,(hl)
+	inc hl
+	ld e,(hl)
+	inc hl
+	ld d,(hl)
+	ex de,hl
 	ld a,(hl)
-	sub a,'V'-1 ; =>V=1,W=2,X=3,...
+	dec b
+	sub a,'V'-3 ; =>V=3,W=4,X=5,Y=6,Z=7
 	di
 	out (#FE),a
 	inc hl
 	ex de,hl
 	call converthex
 	; hl is index read from string so convert to pointer in range 0x8000-0xBFFF
+	add hl,hl ; 2 bytes per index!
 	ld a,0x3F
 	and h
 	or 128
@@ -94,7 +103,7 @@ converthex:
 	ret c ;end of convertion
 	cp 10
 	jr c,.addvalue
-	sub a,12
+	sub a,7
 	cp 16
 	ret nc ;end of convertion
 .addvalue:	; digit is now in A
