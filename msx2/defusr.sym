@@ -1,0 +1,9 @@
+converthex.addvalue: EQU 0x0000C050
+converthex.loop: EQU 0x0000C03E
+converthex: EQU 0x0000C03B
+back2basic: EQU 0x0000C020
+set_mmpage_get_indx_ptr: EQU 0x0000C026
+retrieve: EQU 0x0000C002
+store: EQU 0x0000C013
+VALTYP: EQU 0x0000F663
+DAC: EQU 0x0000F7F6
