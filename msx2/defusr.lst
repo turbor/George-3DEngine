@@ -28,96 +28,96 @@
  27   0000              		;	DAC byte 0..7 double precision real number
  28   0000
  29   0000
- 30   0000              	org 0xc000
- 31   C000
- 32   C000 18 11        	jr store
- 33   C002
- 34   C002              retrieve:
- 35   C002 CD 25 C0     	call set_mmpage_get_indx_ptr
- 36   C005 5E           	ld e,(hl)	; read 16bit value at indx_ptr
- 37   C006 23           	inc hl
- 38   C007 56           	ld d,(hl)
- 39   C008 ED 53 F8 F7  	ld (DAC+2),de	; store in DAC
- 40   C00C 3E 02        	ld a,2
- 41   C00E 32 63 F6     	ld (VALTYP),a	; set return type to int
- 42   C011 18 0C        	jr back2basic
- 43   C013
- 44   C013              store:
- 45   C013 CD 25 C0     	call set_mmpage_get_indx_ptr
- 46   C016 E5           	push hl
- 47   C017 CD 42 C0     	call converthex
- 48   C01A EB           	ex de,hl
- 49   C01B E1           	pop hl
- 50   C01C 73           	ld (hl),e
- 51   C01D 23           	inc hl
- 52   C01E 72           	ld (hl),d
- 53   C01F              back2basic:
- 54   C01F 3E 01        	ld a,1
- 55   C021 D3 FE        	out (0xFE),a
- 56   C023 FB           	ei
- 57   C024 C9           	ret
- 58   C025
- 59   C025              set_mmpage_get_indx_ptr:
- 60   C025              	; get string pointer to interprete
- 61   C025              	; no input validation simply assume it is a string...
- 62   C025 2A F8 F7     	ld hl,(DAC+2)
- 63   C028
- 64   C028 46           	ld b,(hl)
- 65   C029 23           	inc hl
- 66   C02A 5E           	ld e,(hl)
- 67   C02B 23           	inc hl
- 68   C02C 56           	ld d,(hl)
- 69   C02D EB           	ex de,hl
- 70   C02E 7E           	ld a,(hl)
- 71   C02F 05           	dec b
- 72   C030 D6 53        	sub a,'V'-3 ; =>V=3,W=4,X=5,Y=6,Z=7
- 73   C032 F3           	di
- 74   C033 D3 FE        	out (#FE),a
- 75   C035 23           	inc hl
- 76   C036 EB           	ex de,hl
- 77   C037 CD 42 C0     	call converthex
- 78   C03A              	; hl is index read from string so convert to pointer in range 0x8000-0xBFFF
- 79   C03A 29           	add hl,hl ; 2 bytes per index!
- 80   C03B 3E 3F        	ld a,0x3F
- 81   C03D A4           	and h
- 82   C03E F6 80        	or 128
- 83   C040 67           	ld h,a
- 84   C041 C9           	ret
- 85   C042
- 86   C042
- 87   C042              converthex:
- 88   C042 21 00 00     	ld hl,0
- 89   C045              .loop:
- 90   C045              	; if no characters left we return
- 91   C045 78           	ld a,b
- 92   C046 B7           	or a
- 93   C047 C8           	ret z
- 94   C048
- 95   C048              	; otherwise get the next character
- 96   C048              	; and adjust pointer and counter
- 97   C048 1A           	ld a,(de)
- 98   C049 13           	inc de
- 99   C04A 05           	dec b
-100   C04B
-101   C04B              	; check if it is a valid hex digit '0-9A-F'
-102   C04B D6 30        	sub a,'0'
-103   C04D D8           	ret c ;end of convertion
-104   C04E FE 0A        	cp 10
-105   C050 38 05        	jr c,.addvalue
-106   C052 D6 07        	sub a,7
-107   C054 FE 10        	cp 16
-108   C056 D0           	ret nc ;end of convertion
-109   C057              .addvalue:	; digit is now in A
-110   C057 29           	add hl,hl
-111   C058 29           	add hl,hl
-112   C059 29           	add hl,hl
-113   C05A 29           	add hl,hl
-114   C05B D5           	push de
-115   C05C 16 00        	ld d,0
-116   C05E 5F           	ld e,a
-117   C05F 19           	add hl,de
-118   C060 D1           	pop de
-119   C061 18 E2        	jr .loop
-120   C063
-121   C063
+ 30   0000              	org 0xd800
+ 31   D800
+ 32   D800 18 11        	jr store
+ 33   D802
+ 34   D802              retrieve:
+ 35   D802 CD 25 D8     	call set_mmpage_get_indx_ptr
+ 36   D805 5E           	ld e,(hl)	; read 16bit value at indx_ptr
+ 37   D806 23           	inc hl
+ 38   D807 56           	ld d,(hl)
+ 39   D808 ED 53 F8 F7  	ld (DAC+2),de	; store in DAC
+ 40   D80C 3E 02        	ld a,2
+ 41   D80E 32 63 F6     	ld (VALTYP),a	; set return type to int
+ 42   D811 18 0C        	jr back2basic
+ 43   D813
+ 44   D813              store:
+ 45   D813 CD 25 D8     	call set_mmpage_get_indx_ptr
+ 46   D816 E5           	push hl
+ 47   D817 CD 42 D8     	call converthex
+ 48   D81A EB           	ex de,hl
+ 49   D81B E1           	pop hl
+ 50   D81C 73           	ld (hl),e
+ 51   D81D 23           	inc hl
+ 52   D81E 72           	ld (hl),d
+ 53   D81F              back2basic:
+ 54   D81F 3E 01        	ld a,1
+ 55   D821 D3 FE        	out (0xFE),a
+ 56   D823 FB           	ei
+ 57   D824 C9           	ret
+ 58   D825
+ 59   D825              set_mmpage_get_indx_ptr:
+ 60   D825              	; get string pointer to interprete
+ 61   D825              	; no input validation simply assume it is a string...
+ 62   D825 2A F8 F7     	ld hl,(DAC+2)
+ 63   D828
+ 64   D828 46           	ld b,(hl)
+ 65   D829 23           	inc hl
+ 66   D82A 5E           	ld e,(hl)
+ 67   D82B 23           	inc hl
+ 68   D82C 56           	ld d,(hl)
+ 69   D82D EB           	ex de,hl
+ 70   D82E 7E           	ld a,(hl)
+ 71   D82F 05           	dec b
+ 72   D830 D6 53        	sub a,'V'-3 ; =>V=3,W=4,X=5,Y=6,Z=7
+ 73   D832 F3           	di
+ 74   D833 D3 FE        	out (#FE),a
+ 75   D835 23           	inc hl
+ 76   D836 EB           	ex de,hl
+ 77   D837 CD 42 D8     	call converthex
+ 78   D83A              	; hl is index read from string so convert to pointer in range 0x8000-0xBFFF
+ 79   D83A 29           	add hl,hl ; 2 bytes per index!
+ 80   D83B 3E 3F        	ld a,0x3F
+ 81   D83D A4           	and h
+ 82   D83E F6 80        	or 128
+ 83   D840 67           	ld h,a
+ 84   D841 C9           	ret
+ 85   D842
+ 86   D842
+ 87   D842              converthex:
+ 88   D842 21 00 00     	ld hl,0
+ 89   D845              .loop:
+ 90   D845              	; if no characters left we return
+ 91   D845 78           	ld a,b
+ 92   D846 B7           	or a
+ 93   D847 C8           	ret z
+ 94   D848
+ 95   D848              	; otherwise get the next character
+ 96   D848              	; and adjust pointer and counter
+ 97   D848 1A           	ld a,(de)
+ 98   D849 13           	inc de
+ 99   D84A 05           	dec b
+100   D84B
+101   D84B              	; check if it is a valid hex digit '0-9A-F'
+102   D84B D6 30        	sub a,'0'
+103   D84D D8           	ret c ;end of convertion
+104   D84E FE 0A        	cp 10
+105   D850 38 05        	jr c,.addvalue
+106   D852 D6 07        	sub a,7
+107   D854 FE 10        	cp 16
+108   D856 D0           	ret nc ;end of convertion
+109   D857              .addvalue:	; digit is now in A
+110   D857 29           	add hl,hl
+111   D858 29           	add hl,hl
+112   D859 29           	add hl,hl
+113   D85A 29           	add hl,hl
+114   D85B D5           	push de
+115   D85C 16 00        	ld d,0
+116   D85E 5F           	ld e,a
+117   D85F 19           	add hl,de
+118   D860 D1           	pop de
+119   D861 18 E2        	jr .loop
+120   D863
+121   D863
 # file closed: defusr.asm

@@ -27,7 +27,7 @@ VALTYP	equ 0xF663 ; 1 byte indicate the type of variable in DAC
 		;	DAC byte 0..7 double precision real number
 
 
-	org 0xc000
+	org 0xd800
 
 	jr store
 
