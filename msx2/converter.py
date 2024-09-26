@@ -1,5 +1,7 @@
 #!/usr/bin/python3
+import os.path
 import sys
+import argparse
 from pprint import pprint
 
 def add_vertex(obj:dict, info:str) -> None:
@@ -75,8 +77,20 @@ def save_faces(obj:dict, filename:str) -> None:
             f.write("0\n")
         f.write("\n")
 
+def parseArguments():
+    parser = argparse.ArgumentParser(
+                    prog='convertor.py',
+                    description='This program converts OBJ files to two sequential files for the BASIC 3D engine',
+                    epilog='Enjoy the show!')
+    parser.add_argument('filename')     # positional argument
+    parser.add_argument('-d', '--divider', type=int,nargs=1,
+                    help="Manual set the divider used to convert the BASIC int back to float. If not specified the convertor will find the maximum divider.")    # manually set the divider
+    parser.add_argument('-v', '--verbose',action='store_true')  # on/off flag
+    return parser.parse_args()
 
 if __name__ == '__main__':
-    obj=load_obj("suzanneN.obj")
-    save_vertex(obj,"suzanneN.ver")
-    save_faces(obj,"suzanneN.fac")
+    args=parseArguments()
+    filename=args.filename
+    obj=load_obj(filename)
+    save_vertex(obj,os.path.splitext(filename)[0]+".ver")
+    save_faces(obj,os.path.splitext(filename)[0]+".fac")
