@@ -37,6 +37,24 @@ def load_obj(filename: str) -> dict:
                 add_vertexnorm(obj,line[3:].rstrip())
     return obj
 
+def normalize_obj(obj:dict) -> dict:
+    xmin = min(map(lambda a:float(a[0]) ,obj['v']))
+    xmax = max(map(lambda a:float(a[0]) ,obj['v']))
+    ymin = min(map(lambda a:float(a[1]) ,obj['v']))
+    ymax = max(map(lambda a:float(a[1]) ,obj['v']))
+    zmin = min(map(lambda a:float(a[2]) ,obj['v']))
+    zmax = max(map(lambda a:float(a[2]) ,obj['v']))
+    xoffset = (xmax + xmin)/float(2.0)
+    yoffset = (ymax + ymin)/float(2.0)
+    zoffset = (zmax + zmin)/float(2.0)
+    maxdist = max(abs(xmax-xoffset),abs(ymax-yoffset),abs(zmax-zoffset))
+    for i,v in enumerate(obj['v']):
+        obj['v'][i][0] = ((200.0 / 15.0) / maxdist) * (float(v[0]) + xoffset)
+        obj['v'][i][1] = ((200.0 / 15.0) / maxdist) * (float(v[1]) + yoffset)
+        obj['v'][i][2] = ((200.0 / 15.0) / maxdist) * (float(v[2]) + zoffset)
+    return obj
+
+
 def save_vertex(obj:dict, filename:str) -> None:
     # first find the multiplier to get the maximum resolution out of these 16bit signed integers
     # for now we simply go for 100
@@ -92,5 +110,6 @@ if __name__ == '__main__':
     args=parseArguments()
     filename=args.filename
     obj=load_obj(filename)
+    obj=normalize_obj(obj)
     save_vertex(obj,os.path.splitext(filename)[0]+".ver")
     save_faces(obj,os.path.splitext(filename)[0]+".fac")
